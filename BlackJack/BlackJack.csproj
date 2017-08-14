@@ -43,8 +43,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Cards.cs" />
+    <Compile Include="ComputerPlayer.cs" />
+    <Compile Include="PersonPlayer.cs" />
+    <Compile Include="Deck.cs" />
+    <Compile Include="Game.cs" />
+    <Compile Include="IPlayerAble.cs" />
+    <Compile Include="Player.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Suits.cs" />
+    <Compile Include="Values.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
