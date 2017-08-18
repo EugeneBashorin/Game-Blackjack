@@ -74,21 +74,3 @@ namespace BlackJack.Services
         }
     }
 }
-
-//var a = Enum.GetValues(typeof(Values)).Cast<Values>();//convert to IEnumerable
-//(Values)Enum.Parse(typeof(Values),"Queen") : (Values)i,     // Value = (Values)i,//(Values)Enum.GetName(typeof(Values), Values),
-//public void DeckCreator()
-//{
-//    /*_game.Deck.Cards*/ _deck.Cards = new List<Card>();
-//    foreach (var suit in Enum.GetNames(typeof(Suits)))
-//    {
-//        foreach (var value in Enum.GetNames(typeof(Values)))
-//        {
-//            /*_game.Deck*/_deck.Cards.Add(new Card
-//            {
-//                Suit = (Suits)Enum.Parse(typeof(Suits), suit),
-//                Value = (Values)Enum.Parse(typeof(Values), value)
-//            });
-//        }
-//    }
-//}
