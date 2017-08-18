@@ -1,12 +1,13 @@
-﻿using System;
+﻿using BlackJack.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BlackJack
+namespace BlackJack.Services
 {
-    public static class Commands
+    public static class ConsoleServices
     {
         public static string AskName()
         {
@@ -15,7 +16,7 @@ namespace BlackJack
 
             while (!entered)
             {
-                Console.Write("Введите имя: ");
+                Console.Write("Enter your name: ");
                 name = Console.ReadLine();
 
                 if (!string.IsNullOrEmpty(name))
@@ -32,13 +33,18 @@ namespace BlackJack
 
             while (!started)
             {
-                Console.WriteLine(name + ", для начала игры нажмите ENTER");
+                Console.WriteLine(name + ", to start press ENTER, to exit press ESC");
                 var key = Console.ReadKey();
 
                 if (key.Key == ConsoleKey.Enter)
                 {
-                    Console.WriteLine("Игра начата! Да победит сильнейший!");
+                    Console.WriteLine("The game started! Let the strongest win!");
                     started = true;
+                }
+                if (key.Key == ConsoleKey.Escape)
+                {
+                    Console.WriteLine("Good Night Geek!");
+                    break;
                 }
             }
             return started;
@@ -48,10 +54,19 @@ namespace BlackJack
         {
             Console.WriteLine(message);
         }
+        public static void CountMessage()
+        {
+            Console.WriteLine("Let's count!");
+        }
+
+        public static void CardsInDeck(int cardsAmount)
+        {
+            Console.WriteLine("Deck has " + cardsAmount + " cards");
+        }
 
         public static void FirstDeal()
         {
-            Console.WriteLine("Игроки получают по две карты");
+            Console.WriteLine("Both players have received a card");
         }
 
         public static bool AskPlayerToTakeACard(string name)
@@ -60,7 +75,7 @@ namespace BlackJack
 
             while (!answer.Equals("yes") && !answer.Equals("no"))
             {
-                Console.Write(name + ", ещё карту? (yes/no)");
+                Console.Write(name + ", card? (yes/no)");
                 answer = Console.ReadLine();
             }
 
@@ -69,21 +84,26 @@ namespace BlackJack
 
         public static void AskComputerToTakeACard(string name)
         {
-                Console.WriteLine(name + ", ещё карту? (yes/no)");
+                Console.WriteLine(name + ", card? (yes/no)");
         }
 
         public static void Congrat(string name)
         {
-            Console.Write(name + ", победа Ваша!");
+            Console.WriteLine("Congratulations!" + name + ", IS WINNER!");
         }
 
         public static void BothLose()
         {
-            Console.Write("Печалька, перебор у обоих!");
+            Console.WriteLine("Both Players Lose!");
         }
         public static void NoWinner()
         {
-            Console.Write("Победила дружба!");
+            Console.WriteLine("Drawn game!");
+        }
+
+        public static void Holder()
+        {
+            Console.ReadLine();
         }
     }
 }

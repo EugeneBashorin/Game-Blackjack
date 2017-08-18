@@ -7,11 +7,8 @@ namespace BlackJack
     {
         static void Main(string[] args)
         {
-            var gameService = new GameService();
-
+            GameService gameService = new GameService();
             gameService.Run();
-
-            Console.ReadLine();
         }
     }
 }

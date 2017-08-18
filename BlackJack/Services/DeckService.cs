@@ -6,25 +6,13 @@ using System.Linq;
 
 namespace BlackJack.Services
 {
-    /// <summary>
-    /// Deck manage
-    /// </summary>
     public class DeckService
     {
-        private readonly Game _game;
-
-        /// <summary>
-        /// Deck manage
-        /// </summary>
-        /// <param name="game">context of game</param>
-        public DeckService(Game game)
+        private Deck _deck;
+        public DeckService(Deck deck)
         {
-            _game = game;
+            _deck = deck;
         }
-
-        /// <summary>
-        /// Create a new Deck
-        /// </summary>
         public void Initialize(bool shuffle = true)
         {
             DeckCreator();
@@ -36,15 +24,20 @@ namespace BlackJack.Services
 
         public void DeckCreator()
         {
-            _game.Deck.Cards = new List<Card>();
+            int MAX_SCORE = 10;
+            int FIRST_VALUES_ELEMENT = 1;
+            int LENGTH_OF_ENUM_VALUES = Enum.GetValues(typeof(Values)).Length;
+            _deck.Cards = new List<Card>();
+
             foreach (var suit in Enum.GetNames(typeof(Suits)))
             {
-                foreach (var value in Enum.GetNames(typeof(Values)))
+                for (int i = FIRST_VALUES_ELEMENT; i <= LENGTH_OF_ENUM_VALUES; i++)
                 {
-                    _game.Deck.Cards.Add(new Card
+                    _deck.Cards.Add(new Card
                     {
                         Suit = (Suits)Enum.Parse(typeof(Suits), suit),
-                        Value = (Values)Enum.Parse(typeof(Values), value)
+                        Value = (Values)i,
+                        Point = i <= MAX_SCORE ? i : MAX_SCORE
                     });
                 }
             }
@@ -55,53 +48,47 @@ namespace BlackJack.Services
             var random = new Random();
             var shuffleDeck = new List<Card>();
 
-            while (_game.Deck.Cards.Count > 0)
+            while (_deck.Cards.Count > 0)
             {
-                int cardToMove = random.Next(_game.Deck.Cards.Count);
+                int cardToMove = random.Next(_deck.Cards.Count);
 
-                shuffleDeck.Add(_game.Deck.Cards[cardToMove]);
-                _game.Deck.Cards.RemoveAt(cardToMove);
+                shuffleDeck.Add(_deck.Cards[cardToMove]);
+                _deck.Cards.RemoveAt(cardToMove);
             }
 
-            _game.Deck.Cards = shuffleDeck;
+            _deck.Cards = shuffleDeck;
         }
 
-        /// <summary>
-        /// Add card on the top of deck
-        /// </summary>
-        /// <param name="card">Card wich we need to add to the deck</param>
         public void Put(Card card)
         {
-            _game.Deck.Cards.Add(card);
+            _deck.Cards.Add(card);
         }
 
-        /// <summary>
-        /// Deal
-        /// </summary>
-        /// <param name="player">player</param>
-        /// <param name="num">quantity of cards to deal</param>
-        public void Deal(Player player, int num)
+        public void Deal(Player player)
         {
-            var cards = _game.Deck.Cards.Take(num);
+            var cards = _deck.Cards.First();
 
-            _game.Deck.Cards.RemoveRange(0, num);
+            _deck.Cards.Remove(_deck.Cards.First());
 
-            player.Cards.AddRange(cards);
-        }
-
-        /// <summary>
-        /// Hands cards
-        /// </summary>
-        /// <param name="player">player</param>
-        /// <returns>string with list of hand's cards</returns>
-        public string Hand(Player player)
-        {
-            string handsCard = "";
-            foreach (var cards in player.Cards)
-            {
-                handsCard += cards.ToString() + " ";
-            }
-            return handsCard;
+            player.Cards.Add(cards);
         }
     }
 }
+
+//var a = Enum.GetValues(typeof(Values)).Cast<Values>();//convert to IEnumerable
+//(Values)Enum.Parse(typeof(Values),"Queen") : (Values)i,     // Value = (Values)i,//(Values)Enum.GetName(typeof(Values), Values),
+//public void DeckCreator()
+//{
+//    /*_game.Deck.Cards*/ _deck.Cards = new List<Card>();
+//    foreach (var suit in Enum.GetNames(typeof(Suits)))
+//    {
+//        foreach (var value in Enum.GetNames(typeof(Values)))
+//        {
+//            /*_game.Deck*/_deck.Cards.Add(new Card
+//            {
+//                Suit = (Suits)Enum.Parse(typeof(Suits), suit),
+//                Value = (Values)Enum.Parse(typeof(Values), value)
+//            });
+//        }
+//    }
+//}
