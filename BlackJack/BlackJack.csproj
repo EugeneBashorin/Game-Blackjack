@@ -43,7 +43,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Services\ConsoleServices.cs" />
+    <Compile Include="Configurations\Configuration.cs" />
+    <Compile Include="Services\ConsoleService.cs" />
     <Compile Include="Entities\Deck.cs" />
     <Compile Include="Entities\Game.cs" />
     <Compile Include="Entities\Player.cs" />

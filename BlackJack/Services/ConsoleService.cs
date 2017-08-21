@@ -1,13 +1,10 @@
 ﻿using BlackJack.Entities;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BlackJack.Services
 {
-    public static class ConsoleServices
+    public static class ConsoleService
     {
         public static string AskName()
         {
@@ -85,6 +82,30 @@ namespace BlackJack.Services
         public static void AskComputerToTakeACard(string name)
         {
                 Console.WriteLine(name + ", card? (yes/no)");
+        }
+
+        public static string GetPlayerInfo(Player player)
+        {
+            string playerCards = GetHand(player);
+            int playerPoints = GetPlayerScore(player);
+            string res = player.Name + ": " + playerCards + " (" + playerPoints + " " + "points)";
+            return res;
+        }
+
+        public static string GetHand(Player player)
+        {
+            string handsCard = "";
+            foreach (var cards in player.Cards)
+            {
+                handsCard += cards.Value.ToString() + "_" + cards.Suit.ToString() + " ";
+            }
+            return handsCard;
+        }
+
+        public static int GetPlayerScore(Player player)
+        {
+            int playerScore = player.Cards.Sum(c => c.Point);
+            return playerScore;
         }
 
         public static void Congrat(string name)

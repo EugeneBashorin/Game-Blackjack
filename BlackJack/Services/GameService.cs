@@ -1,4 +1,5 @@
-﻿using BlackJack.Entities;
+﻿using BlackJack.Configurations;
+using BlackJack.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,24 +11,25 @@ namespace BlackJack.Services
         private Game _game;
         private Deck _deck;
         private DeckService _deckService;
-
-        public const int MAX_VALUE = 21;
-        public const int ACCEPTABLE_RISK = 15;
-        public const int QUANTITY_CARDS_TO_DEAL = 1;
-        public bool takeFirstPlayer = true;
-        public bool takeSecondPlayer = true;
+ 
         public string name = string.Empty;
 
         public void StartGame()
         {
             _deck = new Deck();
             _deckService = new DeckService(_deck);
-            _game = new Game
-            {
-                Player1 = new Player { Name = name, Cards = new List<Card>() },
-                Player2 = new Player { Name = "Компьютер", Cards = new List<Card>() },
-                Deck = new Deck() { Cards = new List<Card>() },
-            };
+            _game = new Game();
+
+            _game.Player1 = new Player();
+            _game.Player1.Name = name;
+            _game.Player1.Cards = new List<Card>();
+
+            _game.Player2 = new Player();
+            _game.Player2.Name = "Компьютер";
+            _game.Player2.Cards = new List<Card>();
+
+            _game.Deck = new Deck();
+            _game.Deck.Cards = new List<Card>();
             _game.Deck = _deck;
         }
 
@@ -35,43 +37,45 @@ namespace BlackJack.Services
         {
             StartGame();
             SetPlayersName();
-            bool start = ConsoleServices.AskStart(name);
+            bool start = ConsoleService.AskStart(name);
             if (start)
             {
                 _deckService.Initialize();
+                _deckService.Shuffle();
                 int cardsInDeck = CountDecksCards(_game.Deck);
-                ConsoleServices.CardsInDeck(cardsInDeck);
+                ConsoleService.CardsInDeck(cardsInDeck);
                 _deckService.Deal(_game.Player1);
                 _deckService.Deal(_game.Player2);
-                ConsoleServices.FirstDeal();
+                ConsoleService.FirstDeal();
 
                 bool finished = false;
 
                 while (!finished)
                 {
-                    string player1Cards = GetHand(_game.Player1);
-                    string player2Cards = GetHand(_game.Player2);
-                    int player1Points = GetPlayerScore(_game.Player1);
-                    int player2Points = GetPlayerScore(_game.Player2);
+                    bool takeFirstPlayer = true;
+                    bool takeSecondPlayer = true;
+
+                    string player1Cards = ConsoleService.GetHand(_game.Player1);
+                    string player2Cards = ConsoleService.GetHand(_game.Player2);
+                    int player1Points = ConsoleService.GetPlayerScore(_game.Player1);
+                    int player2Points = ConsoleService.GetPlayerScore(_game.Player2);
 
                     cardsInDeck = CountDecksCards(_game.Deck);
-                    ConsoleServices.CardsInDeck(cardsInDeck);
-                    string infoPlayer1 = GetPlayerInfo(_game.Player1);
-                    string infoPlayer2 = GetPlayerInfo(_game.Player2);
+                    ConsoleService.CardsInDeck(cardsInDeck);
+                    string infoPlayer1 = ConsoleService.GetPlayerInfo(_game.Player1);
+                    string infoPlayer2 = ConsoleService.GetPlayerInfo(_game.Player2);
 
                     takeFirstPlayer = GetTheDealForPlayers(_game.Player1, takeFirstPlayer);
                     takeSecondPlayer = GetTheDealForComputer(_game.Player2, takeSecondPlayer);
 
-                    if (player1Points > MAX_VALUE || player2Points > MAX_VALUE || !takeFirstPlayer & !takeSecondPlayer)
+                    if (player1Points > Configuration.MAX_VALUE || player2Points > Configuration.MAX_VALUE || !takeFirstPlayer & !takeSecondPlayer)
                     {
                         GetWinner(player1Points, player2Points);
-                        bool newStart = ConsoleServices.AskStart(name);
-                        StartNewGame(newStart);
                         finished = true;
                     }
                 }
             }
-            ConsoleServices.Holder();
+            ConsoleService.Holder();
         }
 
         public void SetPlayersName()
@@ -81,7 +85,7 @@ namespace BlackJack.Services
             {
                 if (name == string.Empty)
                 {
-                    name = ConsoleServices.AskName();
+                    name = ConsoleService.AskName();
                 }
                 if (name != string.Empty)
                 {
@@ -92,7 +96,7 @@ namespace BlackJack.Services
                     }
                     catch (Exception ex)
                     {
-                        ConsoleServices.Warn(ex.Message);
+                        ConsoleService.Warn(ex.Message);
                     }
                 }
             }
@@ -100,23 +104,23 @@ namespace BlackJack.Services
 
         public bool GetTheDealForPlayers(Player player, bool takeFirstPlayer)
         {
-            int player1Points = GetPlayerScore(_game.Player1);
-            string infoPlayer1 = GetPlayerInfo(_game.Player1);
-            ConsoleServices.Warn(infoPlayer1);
+            int player1Points = ConsoleService.GetPlayerScore(_game.Player1);
+            string infoPlayer1 = ConsoleService.GetPlayerInfo(_game.Player1);
+            ConsoleService.Warn(infoPlayer1);
             while (takeFirstPlayer)
             {
-                player1Points = GetPlayerScore(player);
-                if (player1Points > MAX_VALUE)
+                player1Points = ConsoleService.GetPlayerScore(player);
+                if (player1Points > Configuration.MAX_VALUE)
                 {
                     takeFirstPlayer = false;
                 }
-                takeFirstPlayer = ConsoleServices.AskPlayerToTakeACard(_game.Player1.Name);
-                if (player1Points <= MAX_VALUE & takeFirstPlayer)
+                takeFirstPlayer = ConsoleService.AskPlayerToTakeACard(_game.Player1.Name);
+                if (player1Points <= Configuration.MAX_VALUE & takeFirstPlayer)
                 {
                     _deckService.Deal(_game.Player1);
-                    player1Points = GetPlayerScore(_game.Player1);
-                    infoPlayer1 = GetPlayerInfo(_game.Player1);
-                    ConsoleServices.Warn(infoPlayer1);
+                    player1Points = ConsoleService.GetPlayerScore(_game.Player1);
+                    infoPlayer1 = ConsoleService.GetPlayerInfo(_game.Player1);
+                    ConsoleService.Warn(infoPlayer1);
                 }
             }
             return takeFirstPlayer = false;
@@ -124,53 +128,26 @@ namespace BlackJack.Services
 
         public bool GetTheDealForComputer(Player player, bool takeSecondPlayer)
         {
-            int player2Points = GetPlayerScore(_game.Player2);
-            string infoPlayer2 = GetPlayerInfo(_game.Player2);
-            ConsoleServices.Warn(infoPlayer2);
+            int player2Points = ConsoleService.GetPlayerScore(_game.Player2);
+            string infoPlayer2 = ConsoleService.GetPlayerInfo(_game.Player2);
+            ConsoleService.Warn(infoPlayer2);
             while (takeSecondPlayer)
             {
-                ConsoleServices.AskComputerToTakeACard(_game.Player2.Name);
-                player2Points = GetPlayerScore(player);
-                if (player2Points <= MAX_VALUE & takeSecondPlayer || player2Points != ACCEPTABLE_RISK)
+                ConsoleService.AskComputerToTakeACard(_game.Player2.Name);
+                player2Points = ConsoleService.GetPlayerScore(player);
+                if (player2Points < Configuration.ACCEPTABLE_RISK & takeSecondPlayer)
                 {
-                    if (player2Points <= ACCEPTABLE_RISK)
-                    {
-                        _deckService.Deal(_game.Player2);
-                        infoPlayer2 = GetPlayerInfo(_game.Player2);
-                        player2Points = GetPlayerScore(_game.Player2);
-                        ConsoleServices.Warn(infoPlayer2);
-                    }
-                    if (player2Points >= ACCEPTABLE_RISK)
+                    _deckService.Deal(_game.Player2);
+                    infoPlayer2 = ConsoleService.GetPlayerInfo(_game.Player2);
+                    player2Points = ConsoleService.GetPlayerScore(_game.Player2);
+                    ConsoleService.Warn(infoPlayer2);
+                    if (player2Points >= Configuration.ACCEPTABLE_RISK)
                     {
                         takeSecondPlayer = false;
                     }
                 }
             }
             return takeSecondPlayer = false;
-        }
-
-        public string GetPlayerInfo(Player player)
-        {
-            string playerCards = GetHand(player);
-            int playerPoints = GetPlayerScore(player);
-            string res = player.Name + ": " + playerCards + " (" + playerPoints + " " + "points)";
-            return res;
-        }
-
-        public string GetHand(Player player)
-        {
-            string handsCard = "";
-            foreach (var cards in player.Cards)
-            {
-                handsCard += cards.Value.ToString() + "_" + cards.Suit.ToString() + " ";
-            }
-            return handsCard;
-        }
-
-        public int GetPlayerScore(Player player)
-        {
-            int playerScore = player.Cards.Sum(c => c.Point);
-            return playerScore;
         }
 
         public int CountDecksCards(Deck deck)
@@ -181,44 +158,40 @@ namespace BlackJack.Services
 
         public void GetWinner(int player1Points, int player2Points)
         {
-            ConsoleServices.CountMessage();
-            ConsoleServices.Warn(GetPlayerInfo(_game.Player1));
-            ConsoleServices.Warn(GetPlayerInfo(_game.Player2));
+            ConsoleService.CountMessage();
+            ConsoleService.Warn(ConsoleService.GetPlayerInfo(_game.Player1));
+            ConsoleService.Warn(ConsoleService.GetPlayerInfo(_game.Player2));
 
-            if (player1Points <= MAX_VALUE & player2Points > MAX_VALUE)
+            if (player1Points <= Configuration.MAX_VALUE & player2Points > Configuration.MAX_VALUE)
             {
-                ConsoleServices.Congrat(_game.Player1.Name);
+                ConsoleService.Congrat(_game.Player1.Name);
             }
-            if (player2Points <= MAX_VALUE & player1Points > MAX_VALUE)
+            if (player2Points <= Configuration.MAX_VALUE & player1Points > Configuration.MAX_VALUE)
             {
-                ConsoleServices.Congrat(_game.Player2.Name);
+                ConsoleService.Congrat(_game.Player2.Name);
             }
-            if (player2Points > MAX_VALUE & player1Points > MAX_VALUE)
+            if (player2Points > Configuration.MAX_VALUE & player1Points > Configuration.MAX_VALUE)
             {
-                ConsoleServices.BothLose();
+                ConsoleService.BothLose();
             }
-            if (player1Points > player2Points & player1Points <= MAX_VALUE)
+            if (player1Points > player2Points & player1Points <= Configuration.MAX_VALUE)
             {
-                ConsoleServices.Congrat(_game.Player1.Name);
+                ConsoleService.Congrat(_game.Player1.Name);
             }
-            if (player1Points < player2Points & player2Points <= MAX_VALUE)
+            if (player1Points < player2Points & player2Points <= Configuration.MAX_VALUE)
             {
-                ConsoleServices.Congrat(_game.Player2.Name);
+                ConsoleService.Congrat(_game.Player2.Name);
             }
-            if (player1Points == player2Points & player1Points <= MAX_VALUE)
+            if (player1Points == player2Points & player1Points <= Configuration.MAX_VALUE)
             {
-                ConsoleServices.NoWinner();
+                ConsoleService.NoWinner();
             }
+            StartNewGame();
         }
 
-        public void StartNewGame(bool ask)
+        public void StartNewGame()
         {
-            if (ask)
-            {
-                takeFirstPlayer = true;
-                takeSecondPlayer = true;
                 Run();
-            }
         }
     }
 }
