@@ -25,7 +25,7 @@ namespace BlackJack.Services
             _game.Player1.Cards = new List<Card>();
 
             _game.Player2 = new Player();
-            _game.Player2.Name = "Компьютер";
+            _game.Player2.Name = Configuration.COMPUTER_NAME;
             _game.Player2.Cards = new List<Card>();
 
             _game.Deck = new Deck();
@@ -41,7 +41,6 @@ namespace BlackJack.Services
             if (start)
             {
                 _deckService.Initialize();
-                _deckService.Shuffle();
                 int cardsInDeck = CountDecksCards(_game.Deck);
                 ConsoleService.CardsInDeck(cardsInDeck);
                 _deckService.Deal(_game.Player1);

@@ -8,6 +8,9 @@
 
         public const int PICTURES_CARDS_VALUE = 10;
         public const int ACE_VALUE = 11;
-        public const int INDEX_OF_FIRST_ENUMS_ELEMENT = 0;
+        public const int MIN_INDEX_PICTURES_CARD = 9;
+
+        public const int MIN_VALUE_POINTS = 2;
+        public const string COMPUTER_NAME = "Computer";
     }
 }

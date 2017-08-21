@@ -20,21 +20,18 @@ namespace BlackJack.Services
         }
 
         public void DeckCreator()
-        {
-            int lengthSuitsEnum = Enum.GetValues(typeof(Suits)).Length;
-            int lengthValuesEnum = Enum.GetValues(typeof(Values)).Length;
-            int minValuePoints;
-            int minIndexPicturesCard = 9;
+        {           
+            int firstEnumsElementIndex = 0;
 
-            _deck.Cards = new List<Card>();
+        _deck.Cards = new List<Card>();
 
-            for (int k = Configuration.INDEX_OF_FIRST_ENUMS_ELEMENT; k < lengthSuitsEnum; k++)
+            for (int k = firstEnumsElementIndex; k < Enum.GetValues(typeof(Suits)).Length; k++)
             {
-                minValuePoints = 2;
+                int minValuePoints = Configuration.MIN_VALUE_POINTS;
 
-                for (int i = Configuration.INDEX_OF_FIRST_ENUMS_ELEMENT; i < lengthValuesEnum; i++)
+                for (int i = firstEnumsElementIndex; i < Enum.GetValues(typeof(Values)).Length; i++)
                 {
-                    if (i < minIndexPicturesCard)
+                    if (i < Configuration.MIN_INDEX_PICTURES_CARD)
                     {
                         _deck.Cards.Add(new Card
                         {
@@ -44,17 +41,18 @@ namespace BlackJack.Services
                         });
                         minValuePoints++;
                     }
-                    if (i >= minIndexPicturesCard)
+                    if (i >= Configuration.MIN_INDEX_PICTURES_CARD)
                     {
                         _deck.Cards.Add(new Card
                         {
                             Suit = (Suits)k,
                             Value = (Values)i,
-                            Point = (Values)i == (Values)Enum.Parse(typeof(Values), "Ace") ? Configuration.ACE_VALUE : Configuration.PICTURES_CARDS_VALUE
+                            Point = (Values)i == (Values)Enum.Parse(typeof(Values), Values.Ace.ToString()) ? Configuration.ACE_VALUE : Configuration.PICTURES_CARDS_VALUE
                         });
                     }
                 }
             }
+            Shuffle();
         }
 
         public void Shuffle()
